@@ -37,7 +37,9 @@ export const seedRecords = (): ArchiveRecord[] => [
   makeRecord('a-007', 'A', '铁路建设者赵春生采访', '2021-07-09', ['赵春生'], ['北岭市'], 'OH-ZCS-2021', '数字录音', '01:03:42', '研究者授权', ''),
   makeRecord('b-007', 'B', '赵春生同志口述', '2021-07-09', ['赵春生'], ['北岭市', '青石岭'], 'OH-2021-071', '数字录音', '01:04:01', '研究者授权', '包含铁路工地地点'),
   makeRecord('a-008', 'A', '女书传人何玉莲唱本', '2013-05-18', ['何玉莲'], ['上江乡'], 'MS-HYL-2013', '手稿影像', '42页', '需联系后人', '缺第12页'),
-  makeRecord('b-008', 'B', '何玉莲女书唱本扫描件', '2013-05-18', ['何玉莲'], ['上江乡'], 'MANU-HYL-13', '扫描件', '41页', '联系人待定', '扫描时第12页缺失')
+  makeRecord('b-008', 'B', '何玉莲女书唱本扫描件', '2013-05-18', ['何玉莲'], ['上江乡'], 'MANU-HYL-13', '扫描件', '41页', '联系人待定', '扫描时第12页缺失'),
+  makeRecord('a-009', 'A', '西河渡口水文调查', '2016-03-14', ['宋文博', '何立群'], ['西河镇', '西河渡口'], 'HY-XH-2016-02', '纸质调查表', '9页', '水文站公开资料', '同批次另有一份访谈，受访者不同'),
+  makeRecord('b-009', 'B', '西河渡口水文调查', '2016-03-14', ['方志远'], ['西河镇', '西河渡口'], 'HY-2016-077', '数字抄本', '9页', '水文站公开资料', '题名日期地点一致，但受访人为方志远')
 ];
 
 export const seedState = (): ArchiveState => {
@@ -45,11 +47,13 @@ export const seedState = (): ArchiveState => {
   return {
     revision: 1,
     records,
-    matches: computeMatches(records),
+    matches: computeMatches(records, 'identity').map((match) => ({ ...match, scoreVersion: 1 })),
     merges: [],
-    audit: [{ id: 'seed', at: now, action: '初始化数据', detail: '导入两组示例口述史与手稿记录并完成首轮匹配', recordIds: [] }],
+    audit: [{ id: 'seed', at: now, action: '初始化数据', detail: '导入两组示例口述史与手稿记录，按身份优先口径完成首轮匹配', recordIds: [], scheme: 'identity', schemeVersion: 1 }],
     activeMatchId: '',
     selectedRecordIds: [],
-    hydrated: false
+    hydrated: false,
+    scheme: 'identity',
+    schemeVersion: 1
   };
 };

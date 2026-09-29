@@ -152,4 +152,56 @@ kbd { justify-self: start; padding: 3px 6px; border: 1px solid #c8d2d5; border-b
 .combine-button.selected { color: white; border-color: #9b7244; background: #9b7244; }
 .qwik-check { display: grid; place-items: center; width: 17px; height: 17px; border: 1px solid #b9c8cc; border-radius: 4px; background: white; cursor: pointer; }
 .qwik-check[aria-checked="true"] { color: white; border-color: #3d7c89; background: #3d7c89; }
+
+/* 双口径切换 */
+.scheme-row { display: flex; justify-content: space-between; align-items: stretch; gap: 8px; padding: 10px 12px 0; }
+.scheme-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex: 1; }
+.scheme-option { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 10px; border: 1px solid #cfdbde; border-radius: 8px; background: #f5f8f8; color: #4d626b; text-align: left; transition: .15s ease; }
+.scheme-option strong { font-size: 11px; }
+.scheme-option small { color: #87939a; font-size: 8px; }
+.scheme-option:hover { border-color: #8fb4bc; background: #eef5f5; }
+.scheme-option.active { border-color: var(--cyan); background: #e4f0f1; box-shadow: inset 0 -2px 0 var(--cyan); }
+.scheme-option.active strong { color: var(--navy-2); }
+.scheme-meta { display: flex; flex-direction: column; justify-content: center; gap: 3px; padding: 0 4px; color: #7d8b92; font-size: 8px; text-align: right; white-space: nowrap; }
+
+/* 关键冲突标记 */
+.match-card.key { border-color: #e2c3ba; background: #fbf4f1; }
+.match-card.key:hover { border-color: #d39b8c; }
+.match-card.key.active { border-color: #c26c57; box-shadow: inset 3px 0 0 var(--red); }
+.conflict-badge { padding: 2px 6px; border-radius: 8px; color: white; background: var(--red); font-weight: 700; white-space: nowrap; }
+.reason-line em { font-style: normal; color: #8a6d3b; }
+
+/* 复核面板：冲突说明与结论戳记 */
+.conflict-box { margin-top: 10px; padding: 10px; border: 1px solid #e0b4a8; border-radius: 9px; background: #fdf2ee; }
+.conflict-box.resolved { border-color: #a9cbb9; background: #f1f8f3; }
+.conflict-title { color: #9b4434; font-size: 11px; font-weight: 800; }
+.conflict-box.resolved .conflict-title { color: #2f7f61; }
+.conflict-box p { margin: 5px 0 8px; color: #9a6b60; font-size: 9px; line-height: 1.55; }
+.note-input { width: 100%; min-height: 64px; padding: 8px; border: 1px solid #dcc3bb; border-radius: 7px; background: white; color: #32464e; outline: none; resize: vertical; font-size: 10px; line-height: 1.6; }
+.note-input:focus { border-color: #c07b67; box-shadow: 0 0 0 3px rgba(182,77,61,.1); }
+.note-input:disabled { background: #f0f2f1; color: #5c6e75; }
+.note-state { margin-top: 6px; }
+.note-state em { font-style: normal; font-size: 8px; }
+.note-state em.warn { color: #9b4d3d; }
+.note-state em.ok { color: #2f7f61; }
+.conclusion-stamp { display: flex; flex-direction: column; gap: 3px; margin-top: 10px; padding: 9px 10px; border-left: 3px solid #6da7b1; border-radius: 0 7px 7px 0; background: #edf4f4; }
+.conclusion-stamp strong { font-size: 11px; color: var(--navy-2); }
+.conclusion-stamp span { color: var(--muted); font-size: 9px; }
+
+/* 合并窗口中的说明条 */
+.merge-note-bar { margin: 4px 20px 10px; padding: 8px 10px; border-radius: 7px; background: #fdf2ee; border: 1px solid #e0b4a8; color: #8a4a3d; font-size: 10px; line-height: 1.5; }
+.merge-log .merge-note { margin: 5px 0; padding: 7px 9px; border-radius: 6px; background: #fdf2ee; color: #8a4a3d; }
+.merge-log .merge-note strong { display: inline; }
+
+/* 口径说明区 */
+.scheme-explain { margin: 4px 16px 10px; padding: 10px 11px; border: 1px solid #dce4e6; border-radius: 9px; background: #f7f9f9; }
+.scheme-explain strong { display: block; font-size: 11px; color: #74848b; }
+.scheme-explain strong.current { color: var(--navy-2); }
+.scheme-explain strong.current::before { content: '● '; color: var(--cyan); }
+.scheme-explain p { margin: 3px 0 8px; color: #52666f; font-size: 10px; line-height: 1.55; }
+.scheme-explain .tag-red { padding: 1px 5px; border-radius: 5px; color: white; background: var(--red); font-size: 9px; }
+
+/* 审计条目口径戳 */
+.audit-entry .audit-scheme { display: flex; flex-direction: column; gap: 2px; color: #3f6671; font-size: 8px; }
+.audit-entry .audit-scheme em { color: #93a0a5; font-style: normal; }
 @media (max-width: 1330px) { .desk-grid { grid-template-columns: minmax(330px, 1fr) minmax(380px, 1.15fr) minmax(300px, .85fr); gap: 10px; padding: 0 12px; } .overview, .bottom-grid { padding-left: 12px; padding-right: 12px; } .metrics { gap: 14px; } }
