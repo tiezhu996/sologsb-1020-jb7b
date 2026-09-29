@@ -152,4 +152,21 @@ kbd { justify-self: start; padding: 3px 6px; border: 1px solid #c8d2d5; border-b
 .combine-button.selected { color: white; border-color: #9b7244; background: #9b7244; }
 .qwik-check { display: grid; place-items: center; width: 17px; height: 17px; border: 1px solid #b9c8cc; border-radius: 4px; background: white; cursor: pointer; }
 .qwik-check[aria-checked="true"] { color: white; border-color: #3d7c89; background: #3d7c89; }
+.scheme-switch { display: inline-flex; border: 1px solid #cfdbde; border-radius: 7px; overflow: hidden; background: #eef2f3; }
+.scheme-switch button { border: 0; padding: 6px 11px; color: #5c7178; background: transparent; font-size: 10px; font-weight: 700; }
+.scheme-switch button.active { color: white; background: var(--navy-2); }
+.key-conflict { padding: 2px 6px; border-radius: 8px; color: #96402f; background: #fae7e2; font-weight: 700; }
+.scheme-tag { padding: 2px 6px; border-radius: 8px; color: #315f77; background: #dcebf2; font-size: 8px; }
+.score-change { margin-top: 6px; color: #8a6d2f; font-size: 8px; }
+.conflict-note { margin-top: 6px; display: flex; flex-direction: column; gap: 2px; color: #96402f; font-size: 8px; line-height: 1.5; }
+.conflict-note em { color: #5e7178; font-style: normal; }
+.conflict-panel { margin-top: 10px; padding: 9px 11px; border: 1px solid #e5c4bb; border-radius: 8px; background: #fdf1ee; font-size: 9px; }
+.conflict-panel strong { color: #96402f; }
+.conflict-panel ul { margin: 5px 0 0; padding-left: 16px; color: #96402f; }
+.conflict-panel .handling-note { margin: 6px 0 0; color: #4c6168; }
+.old-score { display: block; margin-top: 3px; color: #8a6d2f; font-size: 8px; }
+.merge-note { margin: 0 20px 12px; padding: 9px 11px; border: 1px solid #e5c4bb; border-radius: 8px; background: #fdf1ee; }
+.merge-note strong { display: block; color: #96402f; font-size: 9px; line-height: 1.5; }
+.merge-note .modal-textarea { width: 100%; min-height: 74px; margin: 7px 0 0; }
+.note-modal .modal-textarea { width: calc(100% - 40px); min-height: 110px; margin: 0 20px; }
 @media (max-width: 1330px) { .desk-grid { grid-template-columns: minmax(330px, 1fr) minmax(380px, 1.15fr) minmax(300px, .85fr); gap: 10px; padding: 0 12px; } .overview, .bottom-grid { padding-left: 12px; padding-right: 12px; } .metrics { gap: 14px; } }

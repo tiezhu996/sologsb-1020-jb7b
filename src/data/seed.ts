@@ -45,11 +45,12 @@ export const seedState = (): ArchiveState => {
   return {
     revision: 1,
     records,
-    matches: computeMatches(records),
+    matches: computeMatches(records, 'identity'),
     merges: [],
-    audit: [{ id: 'seed', at: now, action: '初始化数据', detail: '导入两组示例口述史与手稿记录并完成首轮匹配', recordIds: [] }],
+    audit: [{ id: 'seed', at: now, action: '初始化数据', detail: '导入两组示例口述史与手稿记录并完成首轮匹配（身份优先方案）', recordIds: [] }],
     activeMatchId: '',
     selectedRecordIds: [],
-    hydrated: false
+    hydrated: false,
+    scheme: 'identity'
   };
 };

@@ -1,4 +1,4 @@
-import type { ArchiveRecord, FieldKey, MatchCandidate } from '../types';
+import type { ArchiveRecord, FieldKey, MatchCandidate, ReconciliationScheme } from '../types';
 
 const normalize = (value: string) => value.toLowerCase().replace(/[\s·,，。:：;；()（）\-_/]/g, '');
 const chars = (value: string) => {
@@ -40,7 +40,39 @@ const displayValue = (record: ArchiveRecord, field: FieldKey) => {
   return Array.isArray(value) ? value.join('、') : String(value);
 };
 
-export function scorePair(left: ArchiveRecord, right: ArchiveRecord) {
+export const SCHEME_LABELS: Record<ReconciliationScheme, string> = {
+  identity: '身份优先',
+  content: '内容优先'
+};
+
+/** 各核对方案的字段权重：身份优先重编号与人物，内容优先重标题、日期与地点 */
+const WEIGHTS: Record<ReconciliationScheme, Partial<Record<FieldKey, number>>> = {
+  identity: { title: .20, date: .14, people: .26, places: .10, identifier: .30 },
+  content: { title: .34, date: .26, people: .10, places: .22, identifier: .08 }
+};
+
+/** 关键冲突：身份优先方案下，编号不同或人物不重合即为关键冲突 */
+const keyConflictsFor = (
+  scheme: ReconciliationScheme,
+  left: ArchiveRecord,
+  right: ArchiveRecord,
+  fieldScores: Record<FieldKey, number>
+): string[] => {
+  const conflicts: string[] = [];
+  if (scheme === 'identity') {
+    const lid = left.identifier.trim();
+    const rid = right.identifier.trim();
+    if (lid && rid && normalize(lid) !== normalize(rid)) {
+      conflicts.push(`编号不一致（${lid} ↔ ${rid}）`);
+    }
+    if (left.people.length && right.people.length && fieldScores.people === 0) {
+      conflicts.push(`人物不重合（${left.people.join('、')} ↔ ${right.people.join('、')}）`);
+    }
+  }
+  return conflicts;
+};
+
+export function scorePair(left: ArchiveRecord, right: ArchiveRecord, scheme: ReconciliationScheme = 'identity') {
   const fieldScores: Record<FieldKey, number> = {
     title: exactish(left.title, right.title),
     date: exactish(left.date, right.date),
@@ -52,23 +84,41 @@ export function scorePair(left: ArchiveRecord, right: ArchiveRecord) {
     rights: exactish(left.rights, right.rights),
     notes: exactish(left.notes, right.notes)
   };
-  const score = fieldScores.title * .3 + fieldScores.date * .2 + fieldScores.people * .2 + fieldScores.places * .14 + fieldScores.identifier * .16;
+  const weights = WEIGHTS[scheme];
+  const score = (Object.keys(weights) as FieldKey[])
+    .reduce((sum, field) => sum + fieldScores[field] * (weights[field] ?? 0), 0);
   const reasons: string[] = [];
-  if (fieldScores.identifier > .8) reasons.push('编号高度一致');
-  if (fieldScores.title > .58) reasons.push('标题相似');
-  if (fieldScores.date > .9) reasons.push('日期一致');
-  if (fieldScores.people > .8) reasons.push('人物一致');
-  if (fieldScores.places > .6) reasons.push('地点相近');
-  if (!reasons.length) reasons.push('组合字段达到匹配阈值');
-  return { score: Math.min(1, score), fieldScores, reasons };
+  if (scheme === 'identity') {
+    if (fieldScores.identifier > .8) reasons.push('编号高度一致');
+    else if (fieldScores.identifier > .5) reasons.push('编号相近');
+    if (fieldScores.people > .8) reasons.push('人物一致');
+    else if (fieldScores.people > .4) reasons.push('人物部分重合');
+    if (fieldScores.title > .58) reasons.push('标题相似');
+    if (fieldScores.date > .9) reasons.push('日期一致');
+    if (fieldScores.places > .6) reasons.push('地点相近');
+  } else {
+    if (fieldScores.title > .58) reasons.push('标题相似');
+    if (fieldScores.date > .9) reasons.push('日期一致');
+    else if (fieldScores.date > .6) reasons.push('日期相近');
+    if (fieldScores.places > .6) reasons.push('地点相近');
+    if (fieldScores.people > .8) reasons.push('人物一致');
+    if (fieldScores.identifier > .8) reasons.push('编号高度一致');
+  }
+  if (!reasons.length) reasons.push(scheme === 'content' ? '内容字段达到匹配阈值' : '组合字段达到匹配阈值');
+  return {
+    score: Math.min(1, score),
+    fieldScores,
+    reasons,
+    keyConflicts: keyConflictsFor(scheme, left, right, fieldScores)
+  };
 }
 
-export function computeMatches(records: ArchiveRecord[]): MatchCandidate[] {
+export function computeMatches(records: ArchiveRecord[], scheme: ReconciliationScheme = 'identity'): MatchCandidate[] {
   const left = records.filter((record) => record.group === 'A');
   const right = records.filter((record) => record.group === 'B');
   const matches: MatchCandidate[] = [];
   left.forEach((a) => {
-    const candidates = right.map((b) => ({ record: b, ...scorePair(a, b) }))
+    const candidates = right.map((b) => ({ record: b, ...scorePair(a, b, scheme) }))
       .filter((item) => item.score >= .38)
       .sort((x, y) => y.score - x.score)
       .slice(0, 4);
@@ -80,7 +130,9 @@ export function computeMatches(records: ArchiveRecord[]): MatchCandidate[] {
         score: candidate.score,
         fieldScores: candidate.fieldScores,
         status: 'suggested',
-        reasons: candidate.reasons
+        reasons: candidate.reasons,
+        scheme,
+        keyConflicts: candidate.keyConflicts
       });
     });
   });
